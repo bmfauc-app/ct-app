@@ -1,0 +1,98 @@
+{
+  "sex": [
+    {
+      "code": "CK",
+      "label": "Cock"
+    },
+    {
+      "code": "CR",
+      "label": "Cockerel (Under 1 year)"
+    },
+    {
+      "code": "HN",
+      "label": "Hen"
+    },
+    {
+      "code": "PL",
+      "label": "Pullet (Under 1 year)"
+    }
+  ],
+  "any": {
+    "any": [
+      "under 8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "Over 18"
+    ]
+  },
+  "TA": {
+    "CK": [ "under 8", "9", "10", "11", "12", "13", "14", "15", "16 (Ideal)", "17", "Over 18" ],
+    "CR": [ "under 8", "9", "10", "11", "12", "13", "14 (Ideal)", "15", "16", "17", "Over 18" ],
+    "HN": [ "under 8", "9", "10", "11", "12", "13", "14 (Ideal)", "15", "16", "17", "Over 18" ],
+    "PL": [ "under 8", "9", "10", "11", "12 (Ideal)", "13", "14", "15", "16", "17", "Over 18" ]
+  },
+  "AM": {
+    "CK": [ "under 8", "9", "10", "11", "12", "13", "14 (Ideal)", "15", "16", "17", "Over 18" ],
+    "CR": [ "under 8", "9", "10", "11", "12 (Ideal)", "13", "14", "15", "16", "17", "Over 18" ],
+    "HN": [ "under 8", "9", "10", "11", "12 (Ideal)", "13", "14", "15", "16", "17", "Over 18" ],
+    "PL": [ "under 8", "9", "10 (Ideal)", "11", "12", "13", "14", "15", "16", "17", "Over 18" ]
+  },
+  "MOD": {
+    "CK": [ "under 8", "9", "10", "11", "12", "13", "14 (Ideal)", "15", "16", "17", "Over 18" ],
+    "CR": [ "under 8", "9", "10", "11", "12 (Ideal)", "13", "14", "15", "16", "17", "Over 18" ],
+    "HN": [ "under 8", "9", "10", "11", "12 (Ideal)", "13", "14", "15", "16", "17", "Over 18" ],
+    "PL": [ "under 8", "9", "10 (Ideal)", "11", "12", "13", "14", "15", "16", "17", "Over 18" ]
+  },
+  "traits": [ 
+    { "label": "Back", "options": [
+      { "text": "Long", "TA": -2, "AM": -2, "MOD": -2 },
+      { "text": "Medium Length", "TA": -1, "AM": -2, "MOD": -2 },
+      { "text": "Narrow Width", "TA": -1, "AM": -1, "MOD": -1 },
+      { "text": "Short, upright, V-shaped body", "TA": 2, "AM": 2, "MOD": 2 }
+    ]},
+    { "label": "Breast", "options": [
+      { "text": "Full, lifted, well-rounded", "TA": 2, "AM": 2, "MOD": 2 },
+      { "text": "Full, lifted, Double-breasted", "TA": 1, "AM": 2, "MOD": 2 },
+      { "text": "Narrow, shallow", "TA": -1, "AM": -2, "MOD": -2 }
+    ]},
+    { "label": "Carriage", "options": [
+      { "text": "Diagonally forward", "TA": -1, "AM": -2, "MOD": -2 },
+      { "text": "Horizontal", "TA": -2, "AM": -2, "MOD": -2 },
+      { "text": "Upright", "TA": 2, "AM": 2, "MOD": 2 }
+    ]},
+    { "label": "Head carriage", "options": [
+      { "text": "Held forward in pose", "TA": -2, "AM": -2, "MOD": -2 },
+      { "text": "Head extended up, wattles not touching breast in pose", "TA": -1, "AM": -2, "MOD": -2 },
+      { "text": "Tucked on breast, vertically aligned with feet", "TA": 2, "AM": 1, "MOD": 1 },
+      { "text": "Tucked on breast, eyes vertically aligned behind feet", "TA": 2, "AM": 1, "MOD": 1 },
+      { "text": "Tucked behind breast, eyes vertically aligned behind feet", "TA": 1, "AM": 1, "MOD": 2 }
+    ]},
+    { "label": "Legs", "options": [
+      { "text": "Creeper legs (very short)", "TA": -2, "AM": -2, "MOD": -2 },
+      { "text": "Short", "TA": -1, "AM": -2, "MOD": -2 },
+      { "text": "Medium length", "TA": 2, "AM": 2, "MOD": 1 },
+      { "text": "Long, muscular", "TA": -1, "AM": -1, "MOD": 2 }
+    ]},
+    { "label": "Tail (From Horizontal)", "options": [
+      { "text": "Past 90° (Squirrel tail)", "TA": -2, "AM": -2, "MOD": -2 },
+      { "text": "90° (upright)", "TA": 2, "AM": 1, "MOD": 1 },
+      { "text": "71° to 90°", "TA": 1, "AM": 2, "MOD": 1 },
+      { "text": "66° to 70°", "TA": 1, "AM": 1, "MOD": 2 },
+      { "text": "45°–65°", "TA": -2, "AM": -2, "MOD": -2 }
+    ]},
+    { "label": "Wings", "options": [
+      { "text": "Tucked behind legs (MOD)", "TA": -1, "AM": -2, "MOD": -2 },
+      { "text": "Horizontal", "TA": -2, "AM": -2, "MOD": -2 },
+      { "text": "Vertical", "TA": 2, "AM": 1, "MOD": 1 },
+      { "text": "Vertical to slightly forward", "TA": 1, "AM": 2, "MOD": 1 },
+      { "text": "Thrown 25-45° forward (counter-balances 45-65° tail)", "TA": 1, "AM": 1, "MOD": 2 }
+    ]}
+  ]
+}

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Conformation Select</title>
+<style>
+body {
+  font-family: 'Segoe UI', sans-serif;
+  max-width: 500px;
+  margin: 100px auto 40px auto;
+  padding: 20px;
+  background: #f4f6f8;
+}
+
+h1 {
+  text-align: center;
+  margin-top: 140px;
+  font-size: 1.8rem;
+  color: #333;
+}
+
+h2 {
+  text-align: center;
+  font-size: 1.4rem;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.group-section {
+  background: #fff;
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.group-section h3 {
+  margin-top: 0;
+}
+
+select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+  margin-top: 20px;
+}
+
+#summary {
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  position: fixed;
+  top: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 500px;
+  z-index: 999;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.warning {
+  color: #d62828;
+  font-weight: bold;
+}
+
+.details {
+  margin-left: 20px;
+}
+
+.button-group {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+button {
+  padding: 10px 20px;
+  background: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: background 0.2s ease;
+}
+
+button:hover {
+  background: #155aa8;
+}
+</style>
+</head>
+<body>
+
+<div id="summary">Summary will display here.</div>
+
+<h1>Conformation Select</h1>
+
+<div class="page active" id="page-1">
+  <label for="sex">Select Sex:</label>
+  <select id="sex"></select>
+  <div class="button-group">
+    <div></div>
+    <button id="toPage2">Next</button>
+  </div>
+</div>
+
+<div class="page" id="page-2">
+  <div id="traits-section"></div>
+  <div class="button-group">
+    <button id="backTo1">Back</button>
+    <button id="toPage3">Next</button>
+  </div>
+</div>
+
+<div class="page" id="page-3">
+  <label for="weight">Select Weight:</label>
+  <select id="weight"></select>
+  <div class="button-group">
+    <button id="backTo2">Back</button>
+  </div>
+</div>
+
+<script>
+let pages, summary, sexSelect, traitsSection, weightSelect;
+let traitGroups = [];
+let appData = {};
+let ctCode = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+  pages = document.querySelectorAll('.page');
+  summary = document.getElementById('summary');
+  sexSelect = document.getElementById('sex');
+  traitsSection = document.getElementById('traits-section');
+  weightSelect = document.getElementById('weight');
+
+  fetch('data.json')
+    .then(response => response.json())
+    .then(data => {
+      appData = data;
+      buildSexOptions();
+      buildTraits();
+      updateSummary();
+    })
+    .catch(err => console.error('Error loading data.json:', err));
+
+  document.getElementById('toPage2').addEventListener('click', () => {
+    showPage(2);
+    updateSummary();
+  });
+
+  document.getElementById('backTo1').addEventListener('click', () => {
+    showPage(1);
+    updateSummary();
+  });
+
+  document.getElementById('toPage3').addEventListener('click', () => {
+    calculateCT();
+    buildWeightOptions(ctCode);
+    showPage(3);
+    updateSummary();
+  });
+
+  document.getElementById('backTo2').addEventListener('click', () => {
+    showPage(2);
+    updateSummary();
+  });
+
+  sexSelect.addEventListener('change', updateSummary);
+  weightSelect.addEventListener('change', updateSummary);
+});
+
+function buildSexOptions() {
+  sexSelect.innerHTML = '<option value="">Select</option>';
+  appData.sex.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s.code;
+    opt.textContent = s.label;
+    sexSelect.appendChild(opt);
+  });
+}
+
+function buildTraits() {
+  traitsSection.innerHTML = '';
+  traitGroups = [];
+  appData.traits.forEach(group => {
+    const div = document.createElement('div');
+    div.className = 'group-section';
+    div.innerHTML = `<h3>${group.label}</h3>`;
+    
+    const select = document.createElement('select');
+    select.dataset.label = group.label;
+    select.innerHTML = '<option value="">Select</option>';
+    
+    let idealFound = false;
+    group.options.forEach(opt => {
+      const option = document.createElement('option');
+      option.value = opt.text;
+      option.textContent = opt.text;
+      option.dataset.ta = opt.TA;
+      option.dataset.am = opt.AM;
+      option.dataset.mod = opt.MOD;
+
+      select.appendChild(option);
+
+      if (parseInt(opt.TA) === 2 && !idealFound) {
+        select.value = opt.text;
+        idealFound = true;
+      }
+    });
+    
+    div.appendChild(select);
+    traitsSection.appendChild(div);
+    traitGroups.push(select);
+  });
+}
+
+function buildWeightOptions(ct) {
+  weightSelect.innerHTML = '<option value="">Select</option>';
+  if (!sexSelect.value) return;
+
+  if (ct) {
+    appData[ct][sexSelect.value].forEach(w => {
+      const opt = document.createElement('option');
+      opt.value = w;
+      opt.textContent = w;
+      weightSelect.appendChild(opt);
+    });
+  } else {
+    appData.any.any.forEach(w => {
+      const opt = document.createElement('option');
+      opt.value = w;
+      opt.textContent = w;
+      weightSelect.appendChild(opt);
+    });
+  }
+}
+
+function showPage(n) {
+  pages.forEach((p, i) => p.classList.toggle('active', i === n - 1));
+  updateSummary();
+}
+
+function calculateCT() {
+  let score = { TA: 0, AM: 0, MOD: 0 };
+
+  traitGroups.forEach(select => {
+    const opt = select.selectedOptions[0];
+    if (opt && opt.dataset.ta) {
+      score.TA += parseInt(opt.dataset.ta);
+      score.AM += parseInt(opt.dataset.am);
+      score.MOD += parseInt(opt.dataset.mod);
+    }
+  });
+
+  if (score.TA > score.AM && score.TA > score.MOD) {
+    ctCode = 'TA';
+  } else if (score.AM > score.TA && score.AM > score.MOD) {
+    ctCode = 'AM';
+  } else if (score.MOD > score.TA && score.MOD > score.AM) {
+    ctCode = 'MOD';
+  } else {
+    ctCode = null;
+  }
+}
+
+function updateSummary() {
+  calculateCT();
+
+  let result = ctCode ? 
+    (ctCode === 'TA' ? 'Traditional/American' : ctCode === 'AM' ? 'Ayam/Malaysian' : 'Modern Malaysian') 
+    : 'Undetermined';
+
+  let majorDefects = [];
+  let minorDefects = [];
+  let conflicts = [];
+
+  traitGroups.forEach(select => {
+    const opt = select.selectedOptions[0];
+    if (opt && ctCode) {
+      let value = 0;
+      if (ctCode === 'TA') value = parseInt(opt.dataset.ta);
+      if (ctCode === 'AM') value = parseInt(opt.dataset.am);
+      if (ctCode === 'MOD') value = parseInt(opt.dataset.mod);
+
+      if (value === -2) majorDefects.push(`${select.dataset.label}: ${opt.text}`);
+      if (value === -1) minorDefects.push(`${select.dataset.label}: ${opt.text}`);
+      if (value === 1) conflicts.push(`${select.dataset.label}: ${opt.text}`);
+    }
+  });
+
+  let sexLabel = '';
+  appData.sex.forEach(s => {
+    if (s.code === sexSelect.value) sexLabel = s.label;
+  });
+
+  let weightWarning = '';
+  let finalConclusion = '';
+  if (sexSelect.value && weightSelect.value) {
+    let idealWeight = null;
+    if (ctCode) {
+      appData[ctCode][sexSelect.value].forEach(w => {
+        if (w.includes("(Ideal)")) {
+          idealWeight = parseFloat(w);
+        }
+      });
+    }
+
+    let selectedWeight = parseFloat(weightSelect.value);
+
+    if (!isNaN(idealWeight) && !isNaN(selectedWeight)) {
+      const lower = idealWeight * 0.8;
+      const upper = idealWeight * 1.2;
+      if (selectedWeight < lower || selectedWeight > upper) {
+        weightWarning = `<p class="warning">⚠ Weight is outside ±20% of ideal (${idealWeight})</p>`;
+      }
+    }
+
+    if (majorDefects.length > 0) {
+      finalConclusion = `<p class="warning"><strong>Conclusion:</strong> Does not meet breed standard due to major defects.</p>`;
+    } else if (minorDefects.length > 0 || conflicts.length > 0 || weightWarning) {
+      finalConclusion = `<p class="warning"><strong>Conclusion:</strong> Meets breed standard but has issues (minor defects, conflicts, or weight concerns).</p>`;
+    } else if (ctCode) {
+      finalConclusion = `<p><strong>Conclusion:</strong> Meets breed standard with no defects or conflicts.</p>`;
+    } else {
+      finalConclusion = `<p><strong>Conclusion:</strong> Cannot determine without valid Conformation Type.</p>`;
+    }
+  }
+
+  summary.innerHTML = `
+    <p><strong>Sex:</strong> ${sexLabel}</p>
+    <p><strong>Weight:</strong> ${weightSelect.value}</p>
+    <p><strong>Conformation Type:</strong> ${result}</p>
+    ${weightWarning}
+    ${majorDefects.length > 0 ? `<p class="warning">⚠ Major Defects:</p><div class="details">${majorDefects.join('<br>')}</div>` : ''}
+    ${minorDefects.length > 0 ? `<p class="warning">⚠ Minor Defects:</p><div class="details">${minorDefects.join('<br>')}</div>` : ''}
+    ${conflicts.length > 0 ? `<p class="warning">⚠ Conflicting Traits:</p><div class="details">${conflicts.join('<br>')}</div>` : ''}
+    ${finalConclusion}
+  `;
+}
+</script>
+</body>
+</html>
